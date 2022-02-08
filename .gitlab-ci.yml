@@ -23,8 +23,8 @@ build1:
     - pacman-key --populate archlinux
     - pacman -Syy --noconfirm
     - pacman -S sudo wget git curl cargo lsd bat unzip --noconfirm
-    - git clone https://gitlab.com/mrgofuckyourself/yarrmearch
-    - cd yarrmearch
+    - git clone https://gitlab.com/mrgofuckyourself/yarrmebash
+    - cd yarrmebash
     - bash install.sh
     
 deploy1:
