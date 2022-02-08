@@ -1,0 +1,365 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+PS1='[\u@\h \W]\$ '
+
+#-------------------------------------------------------------
+# Source global definitions (if any)
+#-------------------------------------------------------------
+
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc # --> Read /etc/bashrc, if present.
+fi
+
+#--------------------------------------------------------------
+#  Automatic setting of $DISPLAY (if not set already).
+#  This works for me - your mileage may vary. . . .
+#  The problem is that different types of terminals give
+# different answers to 'who am i' (rxvt in particular can be
+# troublesome) - however this code seems to work in a majority
+# of cases.
+#--------------------------------------------------------------
+
+function get_xserver() {
+	case $TERM in
+	xterm)
+		XSERVER=$(who am i | awk '{print $NF}' | tr -d ')''(')
+		# Ane-Pieter Wieringa suggests the following alternative:
+		# I_AM=$(who am i)
+		# SERVER=${I_AM#*(}
+		# SERVER=${SERVER%*)}
+		XSERVER=${XSERVER%%:*}
+		;;
+	aterm | rxvt)
+		# Find some code that works here. ...
+		;;
+	esac
+}
+
+if [ -z "${DISPLAY:=""}" ]; then
+	get_xserver
+	if [[ -z ${XSERVER} || ${XSERVER} == $(hostname) ||
+	${XSERVER} == "unix" ]]; then
+		DISPLAY=":0.0" # Display on local host.
+	else
+		DISPLAY=${XSERVER}:0.0 # Display on remote host.
+	fi
+fi
+
+export DISPLAY
+
+#-------------------------------------------------------------
+# Some settings
+#-------------------------------------------------------------
+
+# These two options are useful for debugging.
+alias debug="set -o nounset; set -o xtrace"
+
+# Don't want coredumps.
+ulimit -S -c 0
+set -o notify
+set -o noclobber
+set -o ignoreeof
+
+# Enable options:
+shopt -s cdspell
+shopt -s cdable_vars
+shopt -s checkhash
+shopt -s checkwinsize
+shopt -s sourcepath
+shopt -s no_empty_cmd_completion
+shopt -s cmdhist
+shopt -s histappend histreedit histverify
+
+# Necessary for programmable completion.
+shopt -s extglob
+
+# Disable options:
+shopt -u mailwarn
+
+# Don't want my shell to warn me of incoming mail.
+unset MAILCHECK
+
+#-------------------------------------------------------------
+# Greeting, motd etc. ...
+#-------------------------------------------------------------
+# Color definitions (taken from Color Bash Prompt HowTo).
+# Some colors might look different of some terminals.
+# For example, I see 'Bold Red' as 'orange' on my screen,
+# hence the 'Green' 'BRed' 'Red' sequence I often use in my prompt.
+
+# Normal Colors
+
+export Black='\e[0;30m'  # Black
+export Red='\e[0;31m'    # Red
+export Green='\e[0;32m'  # Green
+export Yellow='\e[0;33m' # Yellow
+export Blue='\e[0;34m'   # Blue
+export Purple='\e[0;35m' # Purple
+export Cyan='\e[0;36m'   # Cyan
+export White='\e[0;37m'  # White
+
+# Bold
+
+export BBlack='\e[1;30m'  # Black
+export BRed='\e[1;31m'    # Red
+export BGreen='\e[1;32m'  # Green
+export BYellow='\e[1;33m' # Yellow
+export BBlue='\e[1;34m'   # Blue
+export BPurple='\e[1;35m' # Purple
+export BCyan='\e[1;36m'   # Cyan
+export BWhite='\e[1;37m'  # White
+
+# Background
+
+export On_Black='\e[40m'  # Black
+export On_Red='\e[41m'    # Red
+export On_Green='\e[42m'  # Green
+export On_Yellow='\e[43m' # Yellow
+export On_Blue='\e[44m'   # Blue
+export On_Purple='\e[45m' # Purple
+export On_Cyan='\e[46m'   # Cyan
+export On_White='\e[47m'  # White
+export NC="\e[m"          # Color Reset
+
+# Effect
+
+export blink='\e[5m'	  # Blink
+
+ALERT="${BWhite}${On_Red}" # Bold White on red background
+
+echo -e "${Green}W31c0m3 ${BRed}$USER${NC} ${BGreen}@${NC}${BWhite}   ${NC}${BGreen}$HOSTNAME${NC}  ${BWhite}    ${NC}${Green}H4cK 411 7h3 7h1nG5${NC}\n" # | pv -qL $[10+(-3 + RANDOM%5)]
+echo -e "${BYellow}  ${BRed} ~${NC}${BWhite}${blink}  10100111001${NC}"   `echo -e "  ${BRed} ~ ${BYellow}    ${NC}"` # | pv -qL $[10+(-3 + RANDOM%5)]
+if [ -x /usr/bin/fortune ]; then
+	/usr/bin/fortune -e
+fi
+
+function _exit() { # Function to run upon exit of shell.
+	echo -e "${BRed}Adios Pendejo!${NC}"
+}
+trap _exit EXIT # Prevents accidental exits
+
+#-------------------------------------------------------------
+# Shell Prompt - for many examples, see:
+# http://www.debian-administration.org/articles/205
+# http://www.askapache.com/linux/bash-power-prompt.html
+# http://tldp.org/HOWTO/Bash-Prompt-HOWTO
+# https://github.com/nojhan/liquidprompt
+#-------------------------------------------------------------
+# Current Format: [TIME USER@HOST PWD] >
+# TIME:
+# Green == machine load is low
+# Orange == machine load is medium
+# Red == machine load is high
+# ALERT == machine load is very high
+# USER:
+# Cyan == normal user
+# Orange == SU to user
+# Red == root
+# HOST:
+# Cyan == local session
+# Green == secured remote connection (via ssh)
+# Red == unsecured remote connection
+# PWD:
+# Green == more than 10% free disk space
+# Orange == less than 10% free disk space
+# ALERT == less than 5% free disk space
+# Red == current user does not have write privileges
+# Cyan == current filesystem is size zero (like /proc)
+# >:
+# White == no background or suspended jobs in this shell
+# Cyan == at least one background job in this shell
+# Orange == at least one suspended job in this shell
+#
+# Command is added to the history file each time you hit enter, so it is available to all shells (using 'history -a').
+
+# Test connection type:
+
+if [ -n "${SSH_CONNECTION}" ]; then
+	CNX="${Green}" # Connected on remote machine, via ssh (good).
+elif [[ "${DISPLAY%%:0*}" != "" ]]; then
+	CNX="${ALERT}" # Connected on remote machine, not via ssh (bad).
+else
+	CNX="${BCyan}" # Connected on local machine.
+fi
+
+# Test user type:
+
+if [[ ${USER} == "root" ]]; then
+	SU=${Red} # User is root.
+elif [[ ${USER} != $(logname) ]]; then
+	SU=${BRed} # User is not login user.
+else
+	SU=${BCyan} # User is normal (well ... most of us are).
+fi
+
+NCPU=$(grep -c 'processor' /proc/cpuinfo) # Number of CPUs
+SLOAD=$((100 * NCPU))                     # Small load
+MLOAD=$((200 * NCPU))                     # Medium load
+XLOAD=$((400 * NCPU))                     # Xlarge load
+
+# Returns system load as percentage, i.e., '40' rather than '0.40)'.
+
+function load() {
+	SYSLOAD=$(cut -d " " -f1 /proc/loadavg | tr -d '.')
+	load SYSLOAD
+	# System load of the current host.
+	echo $((10#$SYSLOAD)) # Convert to decimal.
+}
+
+# Returns a color indicating system load.
+
+function load_color() {
+	SYSLOAD=$(load)
+	local SYSLOAD
+	if [ "${SYSLOAD}" -gt "${XLOAD}" ]; then
+		echo -en "${ALERT}"
+	elif [ "${SYSLOAD}" -gt "${MLOAD}" ]; then
+		echo -en "${Red}"
+	elif [ "${SYSLOAD}" -gt "${SLOAD}" ]; then
+		echo -en "${BRed}"
+	else
+		echo -en "${Green}"
+	fi
+}
+
+# Returns a color according to free disk space in $PWD.
+
+function disk_color() {
+	if [ ! -w "${PWD}" ]; then
+		echo -en "${Red}"
+		# No 'write' privilege in the current directory.
+	elif [ -s "${PWD}" ]; then
+		used=$(command df -P "$PWD" |
+			awk 'END {print $5} {sub(/%/,"")}')
+		local used
+		if [ "${used}" -gt 95 ]; then
+			echo -en "${ALERT}" # Disk almost full (>95%).
+		elif [ "${used}" -gt 90 ]; then
+			echo -en "${BRed}" # Free disk space almost gone.
+		else
+			echo -en "${Green}" # Free disk space is ok.
+		fi
+	else
+		echo -en "${Cyan}"
+		# Current directory is size '0' (like /proc, /sys etc).
+	fi
+}
+
+# Returns a color according to running/suspended jobs.
+
+function job_color() {
+	if [ "$(jobs -s | wc -l)" -gt "0" ]; then
+		echo -en "${BRed}"
+	elif [ "$(jobs -r | wc -l)" -gt "0" ]; then
+		echo -en "${BCyan}"
+	fi
+}
+
+# Now we construct the prompt.
+
+PROMPT_COMMAND="history -a"
+case ${TERM} in
+*term | rxvt | linux)
+	PS1="\[\$(load_color)\][\A\[${NC}\] "
+	# Time of day (with load info):
+	PS1="\[\$(load_color)\][\A\[${NC}\] "
+	# User@Host (with connection type info):
+	PS1=${PS1}"\[${SU}\]\u\[${NC}\]@\[${CNX}\]\h\[${NC}\] "
+	# PWD (with 'disk space' info):
+	PS1=${PS1}"\[\$(disk_color)\]\W]\[${NC}\] "
+	# Prompt (with 'job' info):
+	PS1=${PS1}"\[\$(job_color)\]>\[${NC}\] "
+	# Set title of current xterm:
+	PS1=${PS1}"\[\e]0;[\u@\h] \w\a\]"
+	;;
+*)
+	PS1="(\A \u@\h \W) > " # --> PS1="(\A \u@\h \w) > "
+	# --> Shows full pathname of current dir.
+	;;
+esac
+
+export TIMEFORMAT=$'\nreal %3R\tuser %3U\tsys %3S\tpcpu %P\n'
+export HISTIGNORE="&:bg:fg:ll:h"
+#shellcheck disable=SC2155
+export HISTTIMEFORMAT="$(echo -e "${BCyan}")[%d/%m %H:%M:%S]$(echo -e "${NC}") "
+export HISTCONTROL="ignoredups"
+# Put a list of remote hosts in ~/.hosts
+export HOSTFILE="$HOME/.hosts"
+
+#============================================================
+#
+# ALIASES AND FUNCTIONS
+#
+# Arguably, some functions defined here are quite big.
+# If you want to make this file smaller, these functions can
+# be converted into scripts and removed from here.
+#
+#============================================================
+
+#-------------------
+# Personnal Aliases
+#-------------------
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -p'
+alias h='history'
+alias j='jobs -l'
+alias which='type -a'
+alias ..='cd ..'
+
+# Pretty-print of some PATH variables:
+alias path='echo -e ${PATH//:/\\n}'
+alias libpath='echo -e ${LD_LIBRARY_PATH//:/\\n}'
+
+# Makes a more readable output.
+alias du='du -kh'
+alias df='df -kTh'
+
+# Better looking Cat with Bat
+alias cat="bat --style header --style rules --style snip --style changes --style header"
+
+# Alternative ls command: lsd
+alias ls="lsd --blocks name --group-dirs first"
+alias la="lsd --blocks name,size --group-dirs first --human-readable --total-size"
+alias ll="lsd --blocks group,permission,name,size,date --date relative --size short --group-dirs first --human-readable --total-size"
+
+# Reboot now
+alias sr="sudo -S reboot now"
+
+# Auto accept Package updates without user interaction and overwrite conflicts.
+alias pksyua="yay -Syu --noconfirm --overwrite='*'"
+
+# Unlock pacman
+alias unlock="sudo rm -f /var/lib/pacman/db.lck"
+
+# Update grub
+alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
+
+#-------------------------------------------------------------
+# Tailoring 'less'
+#-------------------------------------------------------------
+export PAGER='less'
+export LESSCHARSET='latin1'
+export LESSOPEN='|/usr/bin/lesspipe.sh %s 2>&-' # Use this if lesspipe.sh exists.
+export LESS='-i -N -w -z-4 -g -e -M -X -F -R -P%t?f%f:stdin .?pb%pb\%:?lbLine %lb:?bbByte %bb:-...'
+
+# LESS man page colors (makes Man pages more readable).
+export LESS_TERMCAP_mb=$'\E[01;31m'
+export LESS_TERMCAP_md=$'\E[01;31m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[01;44;33m'
+#export LESS_TERMCAP_ue=$'\E[0m'
+export LESS_TERMCAP_us=$'\E[01;32m'
+
+# Add GIT_DISCOVERY_ACROSS_FILESYSTEM
+export GIT_DISCOVERY_ACROSS_FILESYSTEM="1"
+
+# Add the prompt theme from Starship
+eval "$(starship init bash)"
