@@ -9,7 +9,7 @@ sleep 0.5
 echo "Installing Nerd Fonts. You will need to set your terminal font via your terminals settings. This script is only installing two fonts as the complete font pkg is far too large"
 sleep 3
 sudo -S pacman -S fontconfig --noconfirm || sudo -S apt install fontconfig -y
-sudo -S pacman -S wget unzip --noconfirm || sudo -S apt wget install unzip -y
+sudo -S pacman -S wget unzip --noconfirm || sudo -S apt install wget unzip -y
 wget "https://github.com/ryanoasis/nerd-fonts/releases/download/2.2.0-RC/Go-Mono.zip" && yes| sudo -S unzip Go-Mono.zip -d /usr/share/fonts/ && \
 wget "https://github.com/ryanoasis/nerd-fonts/releases/download/2.2.0-RC/Hack.zip" && yes| sudo -S unzip Hack.zip -d /usr/share/fonts/
 clear
