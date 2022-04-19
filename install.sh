@@ -19,7 +19,6 @@ sudo -S fc-cache -fv
 clear
 echo "Installing starship shell prompt"
 sleep 3
-sudo -S find / -name "yarrmebash" -exec '{}' cp -R {} "$HOME"/yarrmebash \;
 sudo -S pacman -S curl --noconfirm || sudo -S apt install -y curl
 starbang="$(starship init bash)"
 echo "eval $starbang" >>bashrc
