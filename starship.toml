@@ -9,7 +9,7 @@ format = " [╭─](bright-white)[$user]($style)[💀](bright-white)"
 style_user = "bold dimmed white"
 style_root = "bold red"
 show_always = true
-#disabled = false
+disabled = false
 
 # Second param
 [hostname]
@@ -74,102 +74,91 @@ disabled = false
 [aws]
 style = "bright-white"
 symbol = "S3: "
-#disabled = true
-
-#[gcloud]
-#symbol =  
-#disabled = true
+disabled = true
 
 [conda]
 symbol = " "
-#disabled = false
+disabled = false
 
 [dart]
 symbol = " "
-#disabled = false
+disabled = false
 
 [docker_context]
 style = "bright-blue"
 symbol = " "
-#disabled = false
+disabled = false
 
 [elixir]
 symbol = " "
-#disabled = false
+disabled = false
 
 [elm]
 symbol = " "
-#disabled = false
+disabled = false
 
 [git_branch]
 style = "bright-blue"
 symbol = " "
-#disabled = false
+disabled = false
 
 [golang]
 symbol = " "
-#disabled = false
-
-#[haskell]
-#symbol = " "
-#disabled = false
+disabled = false
 
 [hg_branch]
 symbol = "שׂ "
-#disabled = false
+disabled = false
 
 [java]
 symbol = " "
-#disabled = false
+disabled = false
 
 [julia]
 symbol = " "
-#disabled = false
+disabled = false
 
 [nim]
 symbol = " "
-#disabled = false
+disabled = false
 
 [nix_shell]
 symbol = " "
-#disabled = false
+disabled = false
 
 [nodejs]
 symbol = " "
-#disabled = false
+disabled = false
 
 [package]
 symbol = " "
-#disabled = false
+disabled = false
 
 [perl]
 symbol = " "
-#disabled = false
+disabled = false
 
 [php]
 symbol = " "
-#disabled = false
+disabled = false
 
 [python]
 style = "bright-green"
 symbol = " "
-#disabled = false
+disabled = false
 
 [ruby]
 style = "bright-red"
 symbol = " "
-#disabled = false
+disabled = false
 
 [rust]
 symbol = " "
-#disabled = false
+disabled = false
 
 [swift]
 symbol = "ﯣ "
-#disabled = false
-
-[systemd]
-disabled = true
+disabled = false
 
 [memory_usage]
 threshold = -1
