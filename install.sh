@@ -52,4 +52,6 @@ sleep 2
 echo "All finished, I hope you enjoy the new Pirate theme. Yaaaarrr!"
 sleep 1
 cat banner.txt
-sleep 5
+sleep 3
+. ~/.bashrc
+
