@@ -1,20 +1,17 @@
 ## FIRST LINE/ROW: Info & Status
 
-# easily enable/disable by uncommenting disabled = true/false
-
 # You can see the symbols after nerd fonts has been installed. sorry.
 # First param ─┌
 [username]
-format = " [╭─](bright-white)[$user]($style)[💀](bright-white)"
-style_user = "bold dimmed white"
-style_root = "bold red"
+format = " [╭─](dimmed red)[$user]($style)[💀](bright-white)"
+style_user = "bright-white"
+style_root = "red"
 show_always = true
-disabled = false
 
 # Second param
 [hostname]
 format = "[$hostname]($style) "
-style = "bold dimmed white"
+style = "bright-white"
 trim_at = "-"
 ssh_only = false
 disabled = false
@@ -28,61 +25,88 @@ truncation_symbol = ""
 home_symbol = "~"
 read_only = "🔒"
 read_only_style = "red"
-disabled = false
 
 # Before all the version info (python, nodejs, php, etc.)
 [git_status]
-style = "purple"
-ahead = "⇡${count}"
-diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-behind = "⇣${count}"
-deleted = "[ 🗑 ](dimmed white)"
-conflicted = "[ 🏳 ](bold red)"
-up_to_date = "[✓](bold bright-green)"
-untracked = "[_(bold white)[?](bright-yellow)_](bold white)"
-stashed = "[ 📦 ](dimmed yellow)"
-modified = "[ 📝 ](fg:red bg:white)"
-staged = '[++\($count\)](green)'
-renamed = "👅"
-disabled = false
+style = "dimmed purple"
+ahead = " ⇡${count}"
+diverged = " ⇕⇡${ahead_count}⇣${behind_count}"
+behind = " ⇣${count}"
+deleted = " 🗑 (dimmed white)"
+conflicted = " 🏳  (red)"
+up_to_date = "✓(bright-blue)"
+untracked = "_(white)?(bright-yellow)_(white)"
+stashed = " 📦 (dimmed yellow)"
+modified = " 📝 (dimmed yellow)"
+staged = " ++ ($count)](bright-yellow)"
+renamed = " 👅 "
 
 # Last param in the first line/row
 [time]
-format = " [ ](white) [$time]($style)\n"
+format = "  (bright-white) [$time]($style)\n"
 time_format = "%D %I:%M%P"
 style = "bright-cyan"
 disabled = false
 
 # Prompt: param 2 └─
 [character]
-success_symbol = " [╰─](bright-white)[ ](bold white)"
-error_symbol = " [×](bold red)"
-disabled = false
+success_symbol = " [╰─](dimmed red)[ ](bright-white)"
+error_symbol = "  (bold red)"
 
 # SYMBOLS
 [status]
-symbol = " "
-format = '[\[$symbol$status_common_meaning$status_signal_name$status_maybe_int\]]($style)'
+symbol = "  (bright-yellow) "
+format = '[$symbol$status_common_meaning$status_signal_name$status_maybe_int]($style)'
+sigint_symbol = " KILLED (red)"
 map_symbol = true
 disabled = false
 
 [cmd_duration]
-min_time = 1000
-format = "took [$duration](bold yellow)"
+min_time = 3500
+format = 'took [$duration](bold red)'
+style = 'red bold'
+show_milliseconds = false
 disabled = false
+show_notifications = false
+min_time_to_notify = 65000
+
+[shell]
+format = '$indicator '
+bash_indicator = 'bsh'
+fish_indicator = 'fsh'
+zsh_indicator = 'zsh'
+powershell_indicator = 'psh'
+ion_indicator = 'ion'
+elvish_indicator = 'esh'
+tcsh_indicator = 'tsh'
+nu_indicator = 'nu'
+xonsh_indicator = 'xsh'
+unknown_indicator = ''
+disabled = true
+
+[shlvl]
+threshold = 2
+format = '[$symbol$shlvl]($style) '
+symbol = '↕️  '
+repeat = false
+style = 'bold white'
+disabled = true
 
 [aws]
 style = "bright-white"
 symbol = "S3: "
 disabled = true
 
+[gcloud]
+symbol = "GC: "
+disabled = true
+
 [conda]
+style = "bright-green"
 symbol = " "
-disabled = false
 
 [dart]
 symbol = " "
-disabled = false
 
 [docker_context]
 style = "bright-blue"
@@ -91,78 +115,62 @@ disabled = false
 
 [elixir]
 symbol = " "
-disabled = false
 
 [elm]
 symbol = " "
-disabled = false
 
 [git_branch]
 style = "bright-blue"
 symbol = " "
-disabled = false
 
 [golang]
+style = "dimmed blue"
 symbol = " "
-disabled = false
 
 [hg_branch]
 symbol = "שׂ "
-disabled = false
 
 [java]
 symbol = " "
-disabled = false
 
 [julia]
 symbol = " "
-disabled = false
 
 [nim]
 symbol = " "
-disabled = false
 
 [nix_shell]
 symbol = " "
-disabled = false
 
 [nodejs]
 symbol = " "
-disabled = false
+disabled = true
 
 [package]
 symbol = " "
-disabled = false
 
 [perl]
 symbol = " "
-disabled = false
 
 [php]
 symbol = " "
-disabled = false
 
 [python]
 style = "bright-green"
 symbol = " "
-disabled = false
 
 [ruby]
 style = "bright-red"
 symbol = " "
-disabled = false
 
 [rust]
 symbol = " "
-disabled = false
 
 [swift]
 symbol = "ﯣ "
-disabled = false
 
 [memory_usage]
 threshold = -1
-#format = "$symbol [${ram}( ${ram_pct})]($style) " example: 2.2/32G 7% (used)
 format = "$symbol [${ram_pct}]($style) "
 symbol = "[🐏](bright-white)"
 style = "bold bright-red"

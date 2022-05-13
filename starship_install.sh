@@ -40,6 +40,21 @@ has() {
   command -v "$1" 1>/dev/null 2>&1
 }
 
+# Make sure user is not using zsh or non-POSIX-mode bash, which can cause issues
+verify_shell_is_posix_or_exit() {
+  if [ -n "${ZSH_VERSION+x}" ]; then
+    error "Running installation script with \`zsh\` is known to cause errors."
+    error "Please use \`sh\` instead."
+    exit 1
+  elif [ -n "${BASH_VERSION+x}" ] && [ -z "${POSIXLY_CORRECT+x}" ]; then
+    error "Running installation script with non-POSIX \`bash\` may cause errors."
+    error "Please use \`sh\` instead."
+    exit 1
+  else
+    true  # No-op: no issues detected
+  fi
+}
+
 # Gets path to a temporary file, even if
 get_tmpfile() {
   suffix="$1"
@@ -100,7 +115,7 @@ unpack() {
       return 0
       ;;
     *.zip)
-      flags=$(test -z "${VERBOSE-}" && echo "-qq" || echo "")
+      flags=$(test -z "${VERBOSE-}" && echo "-qqo" || echo "-o")
       UNZIP="${flags}" ${sudo} unzip "${archive}" -d "${bin_dir}"
       return 0
       ;;
@@ -128,7 +143,7 @@ usage() {
     "-b, --bin-dir" "Override the bin installation directory [default: ${BIN_DIR}]" \
     "-a, --arch" "Override the architecture identified by the installer [default: ${ARCH}]" \
     "-B, --base-url" "Override the base URL used for downloading releases [default: ${BASE_URL}]" \
-    "-h, --help" "Dispays this help message"
+    "-h, --help" "Display this help message"
 }
 
 elevate_priv() {
@@ -247,7 +262,7 @@ confirm() {
 }
 
 check_bin_dir() {
-  bin_dir="$1"
+  bin_dir="${1%/}"
 
   if [ ! -d "$BIN_DIR" ]; then
     error "Installation location $BIN_DIR does not appear to be a directory"
@@ -260,7 +275,7 @@ check_bin_dir() {
   good=$(
     IFS=:
     for path in $PATH; do
-      if [ "${path}" = "${bin_dir}" ]; then
+      if [ "${path%/}" = "${bin_dir}" ]; then
         printf 1
         break
       fi
@@ -281,7 +296,7 @@ print_install() {
     # we don't want these '~' expanding
     config_file="~/.${s}rc"
     config_cmd="eval \"\$(starship init ${s})\""
- 
+
     case ${s} in
       ion )
         # shellcheck disable=SC2088
@@ -316,20 +331,18 @@ print_install() {
         # shellcheck disable=SC2088
         config_file="~/.elvish/rc.elv"
         config_cmd="eval (starship init elvish)"
-        warning="${warning} Only elvish v0.15 or higher is supported."
+        warning="${warning} Only elvish v0.17 or higher is supported."
         ;;
       nushell )
         # shellcheck disable=SC2088
-        config_file="your nu config file."
-        config_cmd="startup = [
-          \"mkdir ~/.cache/starship\",
-          \"starship init nu | save ~/.cache/starship/init.nu\",
-          \"source ~/.cache/starship/init.nu\"
-        ]
-        prompt = \"starship_prompt\""
+        config_file="your nu config file"
+        config_cmd="mkdir ~/.cache/starship
+        starship init nu | save ~/.cache/starship/init.nu
+        source ~/.cache/starship/init.nu"
         warning="${warning} This will change in the future.
-  Only nu version v0.33 or higher is supported.
-  You can check the location of this your config file by running config path in nu"
+  Only Nushell v0.60 or higher is supported.
+  You can check the location of this your config file by running \$nu.config-path in nu.
+  ${BOLD}First run${NO_COLOR} \"mkdir ~/.cache/starship; starship init nu | save ~/.cache/starship/init.nu\""
         ;;
     esac
     printf "  %s\n  %s\n  Add the following to the end of %s:\n\n\t%s\n\n" \
@@ -346,9 +359,13 @@ print_install() {
   Typically the path is ~\Documents\PowerShell\Microsoft.PowerShell_profile.ps1 or ~/.config/powershell/Microsoft.PowerShell_profile.ps1 on -Nix." \
     "Invoke-Expression (&starship init powershell)"
 
+  printf "  %s\n You need to use Clink (v1.2.30+) with Cmd. Add the following to a file %s and place this file in Clink scripts directory:\n\n\t%s\n\n" \
+    "${BOLD}${UNDERLINE}Cmd${NO_COLOR}" \
+    "${BOLD}starship.lua${NO_COLOR}" \
+    "load(io.popen('starship init cmd'):read(\"*a\"))()"
+
   printf "\n"
 }
-
 
 is_build_available() {
   arch="$1"
@@ -392,6 +409,9 @@ fi
 if [ -z "${BASE_URL-}" ]; then
   BASE_URL="https://github.com/starship/starship/releases"
 fi
+
+# Non-POSIX shells can break once executing code due to semantic differences
+verify_shell_is_posix_or_exit
 
 # parse argv variables
 while [ "$#" -gt 0 ]; do
