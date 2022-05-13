@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-bash
 
 cat banner.txt
-sleep 5
+sleep 3
 read -p "Enter full path to users home dir: " HOME
 echo "Setting as $HOME"
 sleep 0.5
