@@ -22,8 +22,7 @@ sleep 3
 sudo -S pacman -S curl --noconfirm || sudo -S apt install -y curl
 starbang="$(starship init bash)"
 echo "eval $starbang" >>bashrc
-sudo -S pacman -S starship --noconfirm || curl -fsSL https://starship.rs/install.sh -o starship_install.sh && sed -i '/curl, wget, fetch/d' starship_install.sh && sudo -S bash starship_install.sh --yes
-rm -f "$HOME"/.config/starship.toml
+sudo -S pacman -S starship --noconfirm || curl -fsSL https://starship.rs/install.sh -o starship_install.sh && sed -i '/curl, wget, fetch/d' starship_install.sh && sudo -S sh starship_install.sh --yes
 mv starship/starship.toml "$HOME"/.config/starship.toml || mv starship.toml ~/.config/starship.toml
 clear
 echo "Backing up original .bashrc to /home/$USER/.bashrc.bak and installing the new .bashrc"
