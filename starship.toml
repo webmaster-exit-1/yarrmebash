@@ -28,7 +28,6 @@ truncation_symbol = ""
 home_symbol = "~"
 read_only = "🔒"
 read_only_style = "red"
-fish_style_pwd_dir_length = 1
 disabled = false
 
 # Before all the version info (python, nodejs, php, etc.)
@@ -37,12 +36,12 @@ style = "purple"
 ahead = "⇡${count}"
 diverged = "⇕⇡${ahead_count}⇣${behind_count}"
 behind = "⇣${count}"
-deleted = "[🗑](dimmed white)"
-conflicted = "[🏳](bold red)"
+deleted = "[ 🗑 ](dimmed white)"
+conflicted = "[ 🏳 ](bold red)"
 up_to_date = "[✓](bold bright-green)"
 untracked = "[_(bold white)[?](bright-yellow)_](bold white)"
-stashed = "[📦](dimmed yellow)"
-modified = "[📝](fg:red bg:white)"
+stashed = "[ 📦 ](dimmed yellow)"
+modified = "[ 📝 ](fg:red bg:white)"
 staged = '[++\($count\)](green)'
 renamed = "👅"
 disabled = false
@@ -77,8 +76,8 @@ style = "bright-white"
 symbol = "S3: "
 #disabled = true
 
-[gcloud]
-symbol =  
+#[gcloud]
+#symbol =  
 #disabled = true
 
 [conda]
@@ -169,8 +168,10 @@ symbol = " "
 symbol = "ﯣ "
 #disabled = false
 
+[systemd]
+disabled = true
+
 [memory_usage]
-disabled = false
 threshold = -1
 #format = "$symbol [${ram}( ${ram_pct})]($style) " example: 2.2/32G 7% (used)
 format = "$symbol [${ram_pct}]($style) "
